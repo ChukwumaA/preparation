@@ -95,36 +95,55 @@ public class PacmanMove : MonoBehaviour
     public void ResetDestination()
     {
         dest = new Vector2(15f, 11f);
-        GetComponent<Animator>
+        GetComponent<Animator>.SetFloat("DirX", 1);
+        GetComponent<Animator>.SetFloat("DirY", 0);
     }
 
-        // Move closer to Destination
-    //     Vector2 p = Vector2.MoveTowards(transform.position, dest, speed);
-    //     GetComponent<Rigidbody2D>().MovePosition(p);
+    void ReadInputAndMove()
+    {
+        //move closer to destination
+        Vector2 p = vector2.MoveTowards(transform.position, dest, speed);
+        GetComponent<RigidBody2D>().MovePosition(p);
 
-    //       // Check for Input if not moving
-    //     if ((Vector2)transform.position == dest) 
-    //     // Check for Input if not moving
-    //     if ((Vector2)transform.position == dest) 
-    //     {
-    //     if (Input.GetKey(KeyCode.UpArrow) && valid(Vector2.up))
-    //         dest = (Vector2)transform.position + Vector2.up;
+        //get the next direction from keyboard
+        if (Input.GetAxis("Horizontal") > 0) _nextDir = Vector2.right;
+        if (Input.GetAxis("Horizontal") < 0) _nextDir = -Vector2.right;
+        if (Input.GetAxis("Vertical") > 0) _nextDir = Vector2.up;
+        if (Input.GetAxis("Vertical") < 0) _nextDir = -Vector2.up;
 
-    //     if (Input.GetKey(KeyCode.RightArrow) && valid(Vector2.right))
-    //         dest = (Vector2)transform.position + Vector2.right;
+        // if pacman is in the center of a tile
+        if (Vector2.Distance(dest, transform.position) < 0.00001f)
+        {
+            if (valid(_nextDir))
+            {
+                dest = (Vector2)transform.position + _nextDir;
+                _dir = _nextDir;
+            }
+            else //if direction is not valid
+            {
+                if (valid(_dir))
+                {
+                    _dest = (Vector2)transform.position + _dir; //continue on that direction
 
-    //     if (Input.GetKey(KeyCode.DownArrow) && valid(-Vector2.up))
-    //         dest = (Vector2)transform.position - Vector2.up;
+                    //otherwise, do nothing.
+                }
+            }
+        }
+    }
 
-    //     if (Input.GetKey(KeyCode.LeftArrow) && valid(-Vector2.right))
-    //         dest = (Vector2)transform.position - Vector2.right;
-    //     }
+        public Vector2 getDir()
+        {
+            return _dir;
+        }
 
-    //     //Animation Parameters
-    //     Vector2 dire = dest - (Vector2)transform.position;
-    //     GetComponent<Animator>().SetFloat("DirX", dire.x);
-    //     GetComponent<Animator>().SetFloat("DirY", dire.y);
-    // }
+        public void UpdateScore()
+        {
+            killstreak++;
 
-    
+            //limit killstreak at 4
+            if (killstreak > 4) killstreak = 4;
+
+            Instantiate(points.pointSprites[killstreak - 1], transform.position, Quaternion.identity);
+            GameManager.score += (int)Mathf.pow(2, killstreak) * 100;
+        }
 }
