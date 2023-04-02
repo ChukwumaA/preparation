@@ -1,15 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Managers;
 using UnityEngine;
+using UX_Scripts;
 
 public class PacDot : MonoBehaviour
 {
-    void OnTriggerEnter2D(Collider2D co) 
+    void OnTriggerEnter2D(Collider2D other) 
     {
-        if (co.name == "pacman")
+        if (other.name == "pacman")
         {
             GameManager.score += 10;
-            GameObject[] pacdots = GameObject.FindGameObjectWithTag("pacdot");
+            GameObject[] pacdots = GameObject.FindGameObjectsWithTag("pacdot");
             Destroy(gameObject);
 
             if (pacdots.Length == 1)

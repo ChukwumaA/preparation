@@ -1,26 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Managers;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Scores : MonoBehaviour
+namespace UX_Scripts
 {
-    public ScoreManager scoreManager;
-
-    Text scores_txt;
-
-    public void UpdateGUIText(List<ScoreManager.Score> scoreList)
+    public class Scores : MonoBehaviour
     {
-        scores_txt = GetComponent<Text>();
-        Debug.Log("Updating GUIText: scorelist count=" + scoreList.Count);
-        string s = "";
-        foreach (ScoreManager.Score sc in scoreList)
-        {
-            if (sc.score < 1000)
-                s += sc.score + "\t\t\t" + sc.name + "\n";
-            else    
-                s += sc.score + "\t\t" + sc.name + "\n";
-        }
+        public ScoreManager scoreManager;
 
-        scores_txt.text = s;
+        private Text _scoresText;
+
+        public void UpdateGUIText(List<ScoreManager.Score> scoreList)
+        {
+            _scoresText = GetComponent<Text>();
+            Debug.Log("Updating GUIText: Score-list count=" + scoreList.Count);
+            var currentScore = "";
+            foreach (var scores in scoreList)
+            {
+                if (scores.score < 1000)
+                    currentScore += scores.score + "\t\t\t" + scores.name + "\n";
+                else    
+                    currentScore += scores.score + "\t\t" + scores.name + "\n";
+            }
+
+            _scoresText.text = currentScore;
+        }
     }
 }

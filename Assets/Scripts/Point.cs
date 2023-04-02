@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Point : MonoBehaviour
 {
     public float speed;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -14,7 +13,7 @@ public class Point : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(new Vector3(0, speed * TileManager.deltaTime, 0));
+        transform.Translate(new Vector3(0, speed * Time.deltaTime, 0));
         speed -= 0.01f;
     }
 }

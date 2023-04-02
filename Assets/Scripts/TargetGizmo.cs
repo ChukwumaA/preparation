@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TargetGizmo : MonoBehaviour
 {
-    public GmaeObject ghost;
+    public GameObject ghost;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,8 +14,8 @@ public class TargetGizmo : MonoBehaviour
     {
         if(ghost.GetComponent<AI>().targetTile != null)
         {
-            Vector pos = new Vector3(ghost.GetComponent<AI>().targetTile.x,
-                ghost.GetComponent<AI>().targetTile.y, 0f);
+            Vector3 pos = new Vector3(ghost.GetComponent<AI>().targetTile.X,
+                ghost.GetComponent<AI>().targetTile.Y, 0f);
 
             transform.position = pos;
         }

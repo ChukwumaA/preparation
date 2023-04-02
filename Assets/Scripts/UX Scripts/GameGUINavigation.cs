@@ -1,230 +1,238 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Linq;
+using System.Text.RegularExpressions;
+using Managers;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameGUINavigation : MonoBehaviour
+namespace UX_Scripts
 {
-//===========================================================\\
-	//Variable decleration
-	private bool _paused;
-	private bool quit;
-	private string _errorMsg;
-	public bool initailWaitOver = false; //This was commented out in ilbeyi codebase
-
-	public float initialDelay;
-
-	//Canvas present in the User Experience Panels
-	public Canvas PauseCanvas;
-	public Canvas QuitCanvas;
-	public Canvas ReadyCanvas;
-	public Canvas ScoreCanvas;
-	public Canvas ErrorCanvas;
-	public Canvas GameOverCanvas;
-
-	//Buttons for the players
-	public Button MenuButton;
-
-
-//==========================================================================================
-	//Function Decleration
-
-	//We will use this for initialization
-	void Start()
+	public class GameGUINavigation : MonoBehaviour
 	{
-		StartCoroutine("ShowReadyScreen", initialDelay);
-	}
+//======================================================================================================================
+		//Variable Declaration
+		private bool _paused;
+		private bool _quit;
 
-	void Update()
-	{
-		if(Input.GetKeyDown(KeyCode.Escape))
+		public float initialDelay;
+
+		//Canvas present in the User Experience Panels
+		public Canvas pauseCanvas;
+		public Canvas quitCanvas;
+		public Canvas readyCanvas;
+		public Canvas scoreCanvas;
+		public Canvas errorCanvas;
+		public Canvas gameOverCanvas;
+
+		//Buttons for the players
+		public Button menuButton;
+
+
+//======================================================================================================================
+		//Function Declaration
+
+		//We will use this for initialization
+		[Obsolete("Obsolete")]
+		private void Start()
 		{
-			// o go back to main menu, while in the game or playing the game
-			if(Gamemanager.gameState == GameManager.GameState.Scores)
-				Menu();
-			
+			TogglePause();
+			Menu();
+			StartCoroutine(nameof(ShowReadyScreen), initialDelay);
+		}
+
+		private void Update()
+		{
+			if (!Input.GetKeyDown(KeyCode.Escape)) return;
+			//go back to main menu, while in the game or playing the game
+			if(GameManager.gameState == GameManager.GameState.Scores)
+			{
+			}
+
 			//If in the game, toggle pause or quit dialogue
 			else
 			{
-				if(quit == true)
+				if(_quit)
 					ToggleQuit();
-				else
-					TogglePause();
 			}
 		}
-	}
 
 
-	//Public handle to show ready screen coroutine call
-	public void H_ShowReadyScreen()
-	{
-		StartCoroutine("ShowReadyScreen", initialDelay);
-	}
+		//Public handle to show ready screen coroutine call
+		public void H_ShowReadyScreen()
+		{
+			StartCoroutine(nameof(ShowReadyScreen), initialDelay);
+		}
 
-	public void H_ShowGameOverScreen()
-	{
-		StartCoroutine("ShowGameOverScreen");
-	}
+		[Obsolete("Obsolete")]
+		public void H_ShowGameOverScreen()
+		{
+			StartCoroutine(nameof(ShowGameOverScreen));
+		}
 
-	IEnumerator ShowReadyScreen(float seconds)
-	{
-		initailWaitOver = false; //This was commmented in the S.Code
-		GameManager.gameState = GameManager.GameState.Init;
-		ReadyCanvas.enabled = true;
-		yield return new WaitForSeconds(seconds);
-		ReadyCanvas.enabled = false;
-		GameManager.gameState = GameManager.GameState.Game;
-		initailWaitOver.gameState = true;
-	}
+		private IEnumerator ShowReadyScreen(float seconds)
+		{
+			GameManager.gameState = GameManager.GameState.Init;
+			readyCanvas.enabled = true;
+			yield return new WaitForSeconds(seconds);
+			GameManager.gameState = GameManager.GameState.Game;
+		}
 
-	IEnumerator ShowGameOverScreen()
-	{
-		Debug.Log("Showing GAME OVER Screen");
-		GameOverCanvas.enabled = true;
-		yield return new WaitForSeconds(2);
-		Menu();
-	}
+		[Obsolete("Obsolete")]
+		private IEnumerator ShowGameOverScreen()
+		{
+			Debug.Log("Showing GAME OVER Screen");
+			gameOverCanvas.enabled = true;
+			yield return new WaitForSeconds(2);
+			Menu();
+		}
 
-	public void getScoresMenu()
-	{
-		Time.timeScale = 0f; //Stops the animation
-		GameManager.gameState = GameManager.GameState.Scores;
-		MenuButton.enabled = false;
-		ScoreCanvas.enabled = true;
-	}
+		public void GetScoresMenu()
+		{
+			Time.timeScale = 0f; //Stops the animation
+			GameManager.gameState = GameManager.GameState.Scores;
+			menuButton.enabled = false;
+			scoreCanvas.enabled = true;
+		}
 
 
 //===========================================================================
-	//Buttons functions
-	public void TogglePause()
-	{
-		//if ESc key is not pressed, dont pause the game
-		if(_paused)
+		//Buttons functions
+		private void TogglePause()
 		{
-			Time.timeScale = 1;
-			PauseCanvas.enabled = false;
-			_paused = false;
-			MenuButton.enabled = true;
+			//if ESc key is not pressed, dont pause the game
+			if(_paused)
+			{
+				Time.timeScale = 1;
+				pauseCanvas.enabled = false;
+				_paused = false;
+				menuButton.enabled = true;
+			}
+
+			//if escape key is pressed, pause the game
+			else
+			{
+				Time.timeScale = 0;
+				pauseCanvas.enabled = true;
+				_paused = true;
+				menuButton.enabled = false;
+			}
+
+			Debug.Log("PauseCanvas enabled: " + pauseCanvas.enabled);
 		}
 
-		//if escape key is pressed, pause the game
-		else
+		private void ToggleQuit()
 		{
-			Time.timeScale = 0;
-			PauseCanvas.enabled = true;
-			_paused = true;
-			MenuButton.enabled = false;
+			if(_quit)
+			{
+				pauseCanvas.enabled = true;
+				quitCanvas.enabled = false;
+				_quit = false;
+			}
+
+			else
+			{
+				quitCanvas.enabled = true;
+				pauseCanvas.enabled = false;
+				_quit = true;
+			}
 		}
 
-		Debug.Log("PauseCanvas enabled: " + PauseCanvas.enabled);
+		[Obsolete("Obsolete")]
+		private static void Menu()
+		{
+			Application.LoadLevel("Menu");
+			Time.timeScale = 1.0f;
+
+			//take care of game manager
+			GameManager.DestroySelf();
+		}
+
+		[Obsolete("Obsolete")]
+		private IEnumerator AddScore(string playerName, int score)
+		{
+			const string privateKey = "pKey";
+			const string addScoreURL = "http://ilbeyli.byethost18.com/addscore.php?";
+			var hash = MD5Sum(playerName + score + privateKey);
+			
+			Debug.Log("Name: " + name + " Escape: " + WWW.EscapeURL(name));
+			WWW scorePost = new WWW(addScoreURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&hash=" + hash );
+			yield return scorePost;
+
+			if (scorePost.error == null)
+			{
+				Debug.Log("SCORE POSTED");
+
+				//Take care of game manager
+				Destroy(GameObject.Find("Game Manager"));
+				GameManager.score = 0;
+				GameManager.level = 0;
+
+				Application.LoadLevel("score");
+				Time.timeScale = 1.0f; 
+			}
+			else
+			{
+				Debug.Log("Error posting results: " + scorePost.error);
+			}
+
+			yield return new WaitForSeconds(2);
+
+		}
+
+		private string MD5Sum(string strToEncrypt)
+		{
+			var ue = new System.Text.UTF8Encoding();
+			var bytes = ue.GetBytes(strToEncrypt);
+
+			// encrypt bytes
+			var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+			var hashBytes = md5.ComputeHash(bytes);
+			
+			// Convert the encrypted bytes back to a string (base 16)
+			var hashString = hashBytes.Aggregate("", (current, b) => current + Convert.ToString(b, 16).PadLeft(2, '0'));
+
+			return hashString.PadLeft(32, '0');
+		}
+
+		[Obsolete("Obsolete")]
+		public void SubmitScores()
+		{
+			//Check username, post to database if its good to go
+			var highScore = GameManager.score;
+			var userName = scoreCanvas.GetComponentInChildren<InputField>().GetComponentsInChildren<Text>()[1].text;
+			var regex = new Regex("^[a-zA-Z0-9]*$");
+
+			if (userName == "")						 ToggleErrorMsg("Username cannot be empty");
+			else if(!regex.IsMatch(userName))      	 ToggleErrorMsg("Username can only consist alpha-numeric characters");
+			else if(userName.Length > 10)            ToggleErrorMsg("Username cannot be longer than 10 characters");
+			else 									StartCoroutine(AddScore(userName, highScore));
+
+		}
+
+		[Obsolete("Obsolete")]
+		public void LoadLevel()
+		{
+			GameManager.level++;
+			Application.LoadLevel("game");
+		}
+
+		private void ToggleErrorMsg(string toggleErrorMsg)
+		{
+			if (errorCanvas.enabled)
+			{
+				scoreCanvas.enabled = true;
+				errorCanvas.enabled = false;
+			}
+			else
+			{
+				scoreCanvas.enabled = false;
+				errorCanvas.enabled = true;
+				errorCanvas.GetComponentsInChildren<Text>()[1].text = toggleErrorMsg;
+			}
+		}
+
+
+
 	}
-
-	public void ToggleQuit()
-	{
-		if(quit)
-		{
-			PauseCanvas.enabled = true;
-			QuitCanvas.enabled = false;
-			quit = false;
-		}
-
-		else
-		{
-			QuitCanvas.enabled = true;
-			PauseCanvas.enabled = false;
-			quit = true;
-		}
-	}
-
-	public void Menu()
-	{
-		Application.LoadLevel("Menu");
-		Time.timeScale = 1.0f;
-
-		//take care of game manager
-		GameManager.DestroySelf();
-	}
-
-	IEnumerator AddScore(string name, int score)
-	{
-		string privateKey = "pKey";
-		stringAddScoreURL = "http://ilbeyli.byethost18.com/addscore.php?";
-		string hash = md5Sum(name + score + privateKey);
-
-		Debug.Log("Name: " + name + " Escape: " + www.ESCAPEURL(name) + "&score=" + score + "&hash=" + hash);
-		yield return ScorePost;
-
-		if (ScorePost.error == null)
-		{
-			Debug.Log("SCORE POSTED");
-
-			//Take care of game manager
-			Destroy(GameObject.Find("Game Manager"));
-			GameManager.score = 0;
-			GameManager.level = 0;
-
-			Application.LoadLevel("score");
-			Time.timeScale = 1.0f; 
-		}
-		else
-		{
-			Debug.Log("Error posting results: " + ScorePost.error);
-		}
-
-		yield return new WaitForSeconds(2);
-
-	}
-
-	public string md5Sum(string strToEncrypt)
-	{
-		System.Text.UTF8Encoding8 ue = new System.Text.UTF8Encoding();
-		byte[] bytes = ue.GetBytes(strToEncrypt);
-
-		//Convert the encrypted bytes back to a string (base 16)
-		string hashString = "";
-
-		for (int i = 0; i < hashBytes.Length; i++)
-		{
-			hashString += System.Convert.ToString(hashBytes[i], 16).PadLeft(2, "0");
-		}
-
-		return hashString.PadLeft(32, "0");
-	}
-
-	public void SubmitScores()
-	{
-		//Check username, post to database if its good to go
-		int highscore = GameManager.score;
-		string username = ScoreCanvas.GetComponentInChildren<InputField>().GetComponentsInChildren<Text>()[1].text;
-		Regex regex = new Regex("^[a-zA-Z0-9]*$");
-
-		if (username == "")						 ToggleErrorMsg("Username cannot be empty");
-		else if(!regex.IsMatch(username))      	 ToggleErrorMsg("Username can only consist alpha-numeric characters");
-		else if(username.Length > 10)            ToggleErrorMsg("Username cannot be longer than 10 characters");
-		else 									StartCoroutine(AddScore(username, highscore));
-
-	}
-
-	public void LoadLevel()
-	{
-		GameManager.Level++;
-		Application.LoadLevel("game");
-	}
-
-	public void ToggleErrorMsg(string ToggleErrorMsg)
-	{
-		if (ErrorCanvas.enabled)
-		{
-			ScoreCanvas.enabled = true;
-			ErrorCanvas.enabled = false;
-		}
-		else
-		{
-			ScoreCanvas.enabled = false;
-			ErrorCanvas.enabled = true;
-			ErrorCanvas.GetComponentsInChildren<Text>()[1].text = _errorMsg;
-		}
-	}
-
-
-
 }

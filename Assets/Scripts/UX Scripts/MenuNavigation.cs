@@ -1,32 +1,38 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
-public class MenuNavigation : MonoBehaviour
+namespace UX_Scripts
 {
-    public void MainMenu()
+    public class MenuNavigation : MonoBehaviour
     {
-        Application.LoadLevel("menu");
-    }
+        [Obsolete("Obsolete")]
+        public void MainMenu()
+        {
+            Application.LoadLevel("menu");
+        }
 
-    public void Quit()
-    {
-        Application.Quit();
-    }
-    public void Play()
-    {
-        Application.LoadLevel("game");
-    }
-    public void HighScores()
-    {
-        Application.LoadLevel("scores");
-    }
-    public void Credits()
-    {
-        Application.LoadLevel("credits");
-    }
-    public void SourceCode()
-    {
-        Application.OpenURL("https://github.com/ChukwumaA/preparation");
+        public void Quit()
+        {
+            Application.Quit();
+        }
+        [Obsolete("Obsolete")]
+        public void Play()
+        {
+            Application.LoadLevel("game");
+        }
+        [Obsolete("Obsolete")]
+        public void HighScores()
+        {
+            Application.LoadLevel("scores");
+        }
+        [Obsolete("Obsolete")]
+        public void Credits()
+        {
+            Application.LoadLevel("credits");
+        }
+        public void SourceCode()
+        {
+            Application.OpenURL("https://github.com/ChukwumaA/preparation");
+        }
     }
 }

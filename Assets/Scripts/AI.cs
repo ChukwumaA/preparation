@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Managers;
 using UnityEngine;
 
 public class AI : MonoBehaviour
@@ -27,20 +27,20 @@ public class AI : MonoBehaviour
     {
         //get current tile
         Vector3 currentPos = new Vector3(transform.position.x + 0.499f, transform.position.y + 0.499f);
-        currentTile = tiles[manager.Index ((int)currentPos.x, (int)currentPos.y)];
+        currentTile = tiles[TileManager.Index ((int)currentPos.x, (int)currentPos.y)];
 
         targetTile = GetTargetTilePerGhost();
 
         //get the next tile according to direction
-        if(ghost.direction.x > 0) nextTile = tiles[manager.Index ((int)(currentPos.x+1), (int)currentPos.y)];
-        if(ghost.direction.x < 0) nextTile = tiles[manager.Index ((int)(currentPos.x-1), (int)currentPos.y)];
-        if(ghost.direction.y > 0) nextTile = tiles[manager.Index ((int)currentPos.x, (int)(currentPos.y+1))];
-        if(ghost.direction.y < 0) nextTile = tiles[manager.Index ((int)currentPos.x, (int)(currentPos.y-1))];
+        if(ghost.direction.x > 0) nextTile = tiles[TileManager.Index ((int)(currentPos.x+1), (int)currentPos.y)];
+        if(ghost.direction.x < 0) nextTile = tiles[TileManager.Index ((int)(currentPos.x-1), (int)currentPos.y)];
+        if(ghost.direction.y > 0) nextTile = tiles[TileManager.Index ((int)currentPos.x, (int)(currentPos.y+1))];
+        if(ghost.direction.y < 0) nextTile = tiles[TileManager.Index ((int)currentPos.x, (int)(currentPos.y-1))];
 
-        if(nextTile.occupied || currentTile.isIntersection)
+        if(nextTile.Occupied || currentTile.IsIntersection)
         {
             //IF WE BUMP INTO A WALL
-            if(nextTile.occupied && !currentTile.isIntersection)
+            if(nextTile.Occupied && !currentTile.IsIntersection)
             {
                 //if ghost moves to right or left and there is wall on the next tile
                 if(ghost.direction.x != 0)
@@ -65,25 +65,25 @@ public class AI : MonoBehaviour
             //IF WE ARE AT INTERSECTION
             //Calculate the distance to target from each available tile and choose the shortest path
 
-            if(currentTile.isIntersection)
+            if(currentTile.IsIntersection)
             {
                 float dist1, dist2, dist3, dist4;
                 dist1 = dist2 = dist3 = dist4 = 999999f;
-                if(currentTile.up != null && !currentTile.up.occupied && !(ghost.direction.y < 0))
-                        dist1 = manager.distance(currentTile.up, targetTile);
+                if(currentTile.up != null && !currentTile.up.Occupied && !(ghost.direction.y < 0))
+                        dist1 = TileManager.Distance(currentTile.up, targetTile);
 
-                if(currentTile.down != null && !currentTile.down.occupied && !(ghost.direction.y > 0))
-                        dist2 = manager.distance(currentTile.down, targetTile);
+                if(currentTile.down != null && !currentTile.down.Occupied && !(ghost.direction.y > 0))
+                        dist2 = TileManager.Distance(currentTile.down, targetTile);
 
-                if(currentTile.left != null && !currentTile.left.occupied && !(ghost.direction.x > 0))
-                        dist3 = manager.distance(currentTile.left, targetTile);
+                if(currentTile.left != null && !currentTile.left.Occupied && !(ghost.direction.x > 0))
+                        dist3 = TileManager.Distance(currentTile.left, targetTile);
 
-                if(currentTile.right != null && !currentTile.right.occupied && !(ghost.direction.x < 0))
-                        dist4 = manager.distance(currentTile.right, targetTile);
+                if(currentTile.right != null && !currentTile.right.Occupied && !(ghost.direction.x < 0))
+                        dist4 = TileManager.Distance(currentTile.right, targetTile);
 
                 float min = Mathf.Min(dist1, dist2, dist3, dist4 );
                 if(min == dist1) ghost.direction = Vector3.up;
-                if(min == dist2) ghost.firection = Vector3.down;
+                if(min == dist2) ghost.direction = Vector3.down;
                 if(min == dist3) ghost.direction = Vector3.left;
                 if(min == dist4) ghost.direction = Vector3.right;
             }
@@ -92,7 +92,7 @@ public class AI : MonoBehaviour
         //If there is no decision to be made, designate next waypoint for the ghost
         else
         {
-            ghost.direction = ghost.direction; //setterr updates the waypoint
+            ghost.direction = ghost.direction; //setter updates the waypoint
         }
 
     }
@@ -100,24 +100,24 @@ public class AI : MonoBehaviour
     public void RunLogic()
     {
         //get current tile
-        Vecotor3 currentPos = new Vecotor3(transform.position.x + 0.499f, transform.position.y + 0.499f);
-        currentTile = tiles[manager.Index ((int)currentPos.x, (int)currentPos.y)];
+        Vector3 currentPos = new Vector3(transform.position.x + 0.499f, transform.position.y + 0.499f);
+        currentTile = tiles[TileManager.Index ((int)currentPos.x, (int)currentPos.y)];
 
         //get the next tile according to direction
-        if(ghost.direction.x > 0) nextTile = tiles[manager.Index ((int)(currentPos.x+1), (int)currentPos.y)];
-        if(ghost.direction.x < 0) nextTile = tiles[manager.Index ((int)(currentPos.x-1), (int)currentPos.y)];
-        if(ghost.direction.y > 0) nextTile = tiles[manager.Index ((int)currentPos.x, (int)(currentPos.y+1))];
-        if(ghost.direction.y < 0) nextTile = tiles[manager.Index ((int)currentPos.x, (int)(currentPos.y-1))];
+        if(ghost.direction.x > 0) nextTile = tiles[TileManager.Index ((int)(currentPos.x+1), (int)currentPos.y)];
+        if(ghost.direction.x < 0) nextTile = tiles[TileManager.Index ((int)(currentPos.x-1), (int)currentPos.y)];
+        if(ghost.direction.y > 0) nextTile = tiles[TileManager.Index ((int)currentPos.x, (int)(currentPos.y+1))];
+        if(ghost.direction.y < 0) nextTile = tiles[TileManager.Index ((int)currentPos.x, (int)(currentPos.y-1))];
 
         //The two debug.log lines of code everywhere is commented out
         Debug.Log(ghost.direction.x + " " + ghost.direction.y);
-        Debug.Log(ghost.name + ": Next Tile (" + nextTile.x + ", " + nextTile.y + ")" );
+        Debug.Log(ghost.name + ": Next Tile (" + nextTile.X + ", " + nextTile.Y + ")" );
 
-        if(nextTile.occupied || currentTile.isIntersection)
+        if(nextTile.Occupied || currentTile.IsIntersection)
         {
 //=======================================================================================================================================
             //IF WE BUMP INTO A WALL
-                if(nextTile.occupied && !currentTile.isIntersection)
+                if(nextTile.Occupied && !currentTile.IsIntersection)
                 {
                     //if ghost moves to right or left and there is wall on next tile
                     if(ghost.direction.x != 0)
@@ -141,23 +141,23 @@ public class AI : MonoBehaviour
 //======================================================================================================================================================
             //IF WE ARE AT INTERSECTION
             //Choose one available option at random
-            if(currentTile.isIntersection)
+            if(currentTile.IsIntersection)
             {
                 List<TileManager.Tile> availableTiles = new List<TileManager.Tile>();
                 TileManager.Tile chosenTile;
-                if(currentTile.up != null && !currentTile.up.occupied && !(ghost.direction.y < 0))
+                if(currentTile.up != null && !currentTile.up.Occupied && !(ghost.direction.y < 0))
                     availableTiles.Add (currentTile.up);
-                if(currentTile.down != null && !currentTile.down.occupied && !(ghost.directon.y > 0))
+                if(currentTile.down != null && !currentTile.down.Occupied && !(ghost.direction.y > 0))
                     availableTiles.Add (currentTile.down);
-                if(currentTile.left != null && !currentTile.left.occupied && !(ghost.direction.x > 0))
+                if(currentTile.left != null && !currentTile.left.Occupied && !(ghost.direction.x > 0))
                     availableTiles.Add (currentTile.left);
-                if(currentTile.right != null && !currentTile.right.occupied && !(ghost.direction.x < 0))
+                if(currentTile.right != null && !currentTile.right.Occupied && !(ghost.direction.x < 0))
                     availableTiles.Add(currentTile.right);
 
                 int rand = Random.Range(0, availableTiles.Count);
                 chosenTile = availableTiles[rand];
-                ghost.direction = Vector3.Normalize(new Vector3(chosenTile.x - currentTile.x, chosenTile.y - currentTile.y, 0));
-                Debug.Log(ghost.name + ": Chosen Tile (" + chosenTile.x + ", " + chosenTile.y + ")" );
+                ghost.direction = Vector3.Normalize(new Vector3(chosenTile.X - currentTile.X, chosenTile.Y - currentTile.Y, 0));
+                Debug.Log(ghost.name + ": Chosen Tile (" + chosenTile.X + ", " + chosenTile.Y + ")" );
                 //Debug statement was commented out.
             }
         }
@@ -180,37 +180,37 @@ public class AI : MonoBehaviour
         {
             case "blinky": //target = pacman
                 targetPos = new Vector3 (target.position.x+0.4999f, target.position.y + 0.499f);
-                targetTile = tiles[manager.Index((int)targetPos.x, (int)targetPos.y)];
+                targetTile = tiles[TileManager.Index((int)targetPos.x, (int)targetPos.y)];
                 break;
 
             case "pinky": //target = pacman + 4*pacman's direction (4 steps ahead of pacman)
-                dir = target.GetComponent<PacmanMove>().getDir();
+                dir = target.GetComponent<PacmanMove>().GetDir();
                 targetPos = new Vector3 (target.position.x + 0.499f, target.position.y+0.499f) + 4*dir;
 
                 //if pacmans going up, not 4 ahead but 4 up and 4 left is the target
                 //so, we subtract 4 from X co-ordinates from target position
                 if(dir == Vector3.up)   targetPos -= new Vector3(4, 0, 0);
 
-                targetTile = tiles[manager.Index((int)targetPos.x, (int)targetPos.y)];
+                targetTile = tiles[TileManager.Index((int)targetPos.x, (int)targetPos.y)];
                 break;
             
             case "inky":    //target = ambushVector(pacman+2 - blinky)  added to pacman+2
-                dir = target.GetComponent<PacmanMove>().getDir();
-                Vector3 blinkyPos = GameOject.Find("blinky").transform.position;
+                dir = target.GetComponent<PacmanMove>().GetDir();
+                Vector3 blinkyPos = GameObject.Find("blinky").transform.position;
                 Vector3 ambushVector = target.position + 2*dir - blinkyPos;
                 targetPos = new Vector3 (target.position.x+0.499f, target.position.y+0.499f) + 2*dir + ambushVector;
-                targetTile = tiles[manager.Index((int)targetPos.x, (int)targetPos..y)];
+                targetTile = tiles[TileManager.Index((int)targetPos.x, (int)targetPos.y)];
                 break;
 
             case "clyde":
                 targetPos = new Vector3 (target.position.x+0.499f, target.position.y + 0.499f);
-                targetTile = tiles[manager.Index((int)targetPos.x, (int)targetPos.y)];
-                if(manager.distance(targetTile, currentTile) < 9)
-                    targetTile = tiles[manager.Index (0, 2)];
+                targetTile = tiles[TileManager.Index((int)targetPos.x, (int)targetPos.y)];
+                if(TileManager.Distance(targetTile, currentTile) < 9)
+                    targetTile = tiles[TileManager.Index (0, 2)];
                 break;
             default: 
                 targetTile = null;
-                Debug.Log("TAGET TILE NOT ASSIGNED");
+                Debug.Log("TARGET TILE NOT ASSIGNED");
                 break;
         }
         return targetTile;

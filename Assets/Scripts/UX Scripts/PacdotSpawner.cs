@@ -1,26 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PacdotSpawner : MonoBehaviour
+namespace UX_Scripts
 {
-    public GameObject pacdot;
-    public float interval;
-    public float startOffset;
-    public float startTime;
-
-    // Start is called before the first frame update
-    void Start()
+    public class PacdotSpawner : MonoBehaviour
     {
-        startTime = Time.time + startOffset;
-    }
+        public GameObject pacdot;
+        public float interval;
+        public float startOffset;
+        public float startTime;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(startTime.time > startTime + interval)
+        // Start is called before the first frame update
+        private void Start()
         {
-            GameObject obj = (GameObject)Instantiate(pacdot, transform.position, Quaternion.identity);
+            startTime = Time.time + startOffset;
+        }
+
+        // Update is called once per frame
+        private void Update()
+        {
+            if (!(Time.time > startTime + interval)) return;
+            var obj = Instantiate(pacdot, transform.position, Quaternion.identity);
             obj.transform.parent = transform;
 
             startTime = Time.time;

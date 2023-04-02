@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Managers;
 using UnityEngine;
 
 public class Energizer : MonoBehaviour
@@ -10,8 +9,8 @@ public class Energizer : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("Game Manager"). GetComponent<GameManager>();
-        if(gm == null ) 
-        Debug.Log("Energizer did not find Game Manager");
+        if(gm == null )  
+            Debug.Log("Energizer did not find Game Manager");
     }
 
     // Update is called once per frame

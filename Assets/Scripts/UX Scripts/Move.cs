@@ -1,19 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class Move : MonoBehaviour
+namespace UX_Scripts
 {
-    public float speed;
-
-    // Update is called once per frame
-    void Update()
+    public class Move : MonoBehaviour
     {
-        transform.Translate(Vector3.left * speed * Time.deltaTime);
-    }
+        public float speed;
 
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        Destroy(gameObject);
+        // Update is called once per frame
+        private void Update()
+        {
+            transform.Translate(Vector3.left * (speed * Time.deltaTime));
+        }
+
+        private void OnTriggerEnter2D(Collider2D col)
+        {
+            Destroy(gameObject);
+        }
     }
 }

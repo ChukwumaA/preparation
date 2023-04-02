@@ -1,12 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.IO;
+using Managers;
 using UnityEngine;
+using UX_Scripts;
 
 public class GhostMove : MonoBehaviour
 {
-//==================================================================================================================
+//======================================================================================================================
     //Navigation variables
     private Vector3 waypoint;   //AI determined waypoint
     private Queue<Vector3> waypoints; // waypoints used on Init and Scatter states
@@ -25,14 +26,11 @@ public class GhostMove : MonoBehaviour
             _direction = value;
             Vector3 pos = new Vector3((int)transform.position.x, (int) transform.position.y, (int)transform.position.z);
             waypoint = pos + _direction;
-            //The debug sentence was commenetd out
-            Debug.Log("waypoint (" + waypoint.position.x + ", " + waypoint.position.y + ") set! _direction: " + _direction.x + ", " + _direction.y );
         }
     }
-
     public float speed = 0.3f;
 
-//=====================================================================================================
+//======================================================================================================================
     //Ghost Mode Variables
     public float scatterLength = 5f;
     public float waitLength = 0.0f;
@@ -72,7 +70,7 @@ public class GhostMove : MonoBehaviour
 
         if(GameManager.gameState == GameManager.GameState.Game)
         {
-            animate();
+            Animate();
 
             switch(state)
             {
@@ -100,12 +98,12 @@ public class GhostMove : MonoBehaviour
         }
     }
 
-//========================================================================================================
+//======================================================================================================================
     //Start() Function
 
     public void InitializeGhost()
     {
-        _startPos = getStartPosAccordingToName();
+        _startPos = GetStartPosAccordingToName();
         waypoint = transform.position; //to avoid flickering animation
         state = State.Wait;
         timeToEndWait = Time.time + waitLength + GUINav.initialDelay;
@@ -124,7 +122,7 @@ public class GhostMove : MonoBehaviour
     private void InitializeWaypoints(State st)
     {
 //=======================================================================================================================================
-        //File Format: Init and Scatter Cordinates seperated by empty line
+        //File Format: Init and Scatter Coordinates seperated by empty line
         //Init X, Y
         //Init X, Y
         //
@@ -133,7 +131,7 @@ public class GhostMove : MonoBehaviour
 
 //=============================================================================================================================================
         //Hardcore waypoints according to name.
-        string date = "";
+        string data = "";
         switch (name)
         {
         case "blinky":
@@ -193,7 +191,7 @@ public class GhostMove : MonoBehaviour
             10 8";
             break;
         }
-//=========================================================================================================================================
+//======================================================================================================================
         //Rad from the hardcoded waypoints
         string line;
 
@@ -222,7 +220,7 @@ public class GhostMove : MonoBehaviour
         if (st == State.Scatter)
         {
             //skip until empty line is reached, read coordinates afterwards
-            bool scaterWps = false; //Scater waypoints
+            bool scatterWps = false; //Scatter waypoints
 
             using (StringReader reader = new StringReader(data))
             {
@@ -234,7 +232,7 @@ public class GhostMove : MonoBehaviour
                         continue; //do not read empty line, go to next line
                     }
 
-                    if (scaterWps)
+                    if (scatterWps)
                     {
                         string[] values = line.Split(' ');
                         int x = Int32.Parse(values[0]);
@@ -249,21 +247,26 @@ public class GhostMove : MonoBehaviour
 
 
         //if in wait state, patrol vertically
-        if (st == State)
+        if (st == State.Wait)
         {
             Vector3 pos = transform.position;
 
             //Inky and clyde start going down and then up
             if (transform.name == "inky" || transform.name == "clyde")
             {
-                waypoints.Enqueue(new Vector3(pos.x, pos.y - 0.5f, of));
-                waypoints.Enqueue(new Vector3(pos.x, pos.y + 0.5f, of));
-                
+                waypoints.Enqueue(new Vector3(pos.x, pos.y - 0.5f, 0f));
+                waypoints.Enqueue(new Vector3(pos.x, pos.y + 0.5f, 0f));
+            }
+            // while pinky start going up and then down
+            else
+            {
+                waypoints.Enqueue(new Vector3(pos.x, pos.y + 0.5f, 0f));
+                waypoints.Enqueue(new Vector3(pos.x, pos.y - 0.5f, 0f));
             }
         }
     }
 
-    private Vector3 getStartPosAccordingToName()
+    private Vector3 GetStartPosAccordingToName()
     {
         switch (gameObject.name)
         {
@@ -282,9 +285,9 @@ public class GhostMove : MonoBehaviour
     
         return new Vector3();
     }
-//==================================================================================================================================================
+//======================================================================================================================
     //Update Function
-    void animate()
+    void Animate()
     {
         Vector3 dir = waypoint - transform.position;
         GetComponent<Animator>().SetFloat("DirX", dir.x);
@@ -304,12 +307,12 @@ public class GhostMove : MonoBehaviour
             }
             else
             {
-                _gm.LoseLife();
+                GameManager.LoseLife();
             }
         }
     }
 
-//==========================================================================================================================================================
+//======================================================================================================================
     //State Functions
     void Wait()
     {
@@ -329,7 +332,7 @@ public class GhostMove : MonoBehaviour
         _timeToWhite = 0;
 
         //If the Queue is cleared, do some clean up and change the state
-        if(waypoint.Count == 0)
+        if(waypoints.Count == 0)
         {
             state = State.Scatter;
 
@@ -355,7 +358,7 @@ public class GhostMove : MonoBehaviour
 
     void Scatter()
     {
-        if(TimeOnly.time >= timeToEndScatter)
+        if(Time.time >= timeToEndScatter)
         {
             waypoints.Clear();
             state = State.Chase;
@@ -389,7 +392,7 @@ public class GhostMove : MonoBehaviour
         if (Vector3.Distance(transform.position, waypoint) > 0.000000000001)
         {
             Vector2 p = Vector2.MoveTowards(transform.position, waypoint, speed);
-            getComponent<Rigidbody2D>().MovePosition(p);
+            GetComponent<Rigidbody2D>().MovePosition(p);
         }
 
         //if at waypoint, run AI run away logic
@@ -397,7 +400,7 @@ public class GhostMove : MonoBehaviour
             GetComponent<AI>().RunLogic();
     }
 
-//====================================================================================================================
+//======================================================================================================================
     //Utility functions
     void MoveToWaypoint(bool loop = false)
     {
@@ -413,7 +416,7 @@ public class GhostMove : MonoBehaviour
             if(loop)
                 waypoints.Enqueue(waypoints.Dequeue());
             else    
-                waypoint.Dequeue();
+                waypoints.Dequeue();
         }
     }
 
